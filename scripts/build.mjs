@@ -6,37 +6,25 @@ import * as ts from 'typescript';
 
 const projectDir = process.cwd();
 const configPath = path.join(projectDir, 'tsconfig.json');
-const configJson = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const configText = fs.readFileSync(configPath, 'utf8');
+const configJson = JSON.parse(configText);
 
-const compilerOptions = {
-  ...configJson.compilerOptions,
-  target: ts.ScriptTarget.ES2020,
-  module: ts.ModuleKind.ES2020,
-};
+// Parse the tsconfig.json properly using TypeScript API
+const parsedConfig = ts.parseJsonConfigFileContent(
+  configJson,
+  ts.sys,
+  path.dirname(configPath)
+);
 
-const host = ts.createCompilerHost(compilerOptions);
-const sourceFiles = [];
+console.log(`Building ${parsedConfig.fileNames.length} TypeScript files...`);
 
-function walkDir(dir) {
-  const files = fs.readdirSync(dir);
-  for (const file of files) {
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
-    if (stat.isDirectory() && !file.startsWith('.') && file !== 'node_modules' && file !== 'dist') {
-      walkDir(fullPath);
-    } else if (file.endsWith('.ts') && !file.endsWith('.test.ts')) {
-      sourceFiles.push(fullPath);
-    }
-  }
-}
+const program = ts.createProgram(
+  parsedConfig.fileNames,
+  parsedConfig.options,
+  ts.createCompilerHost(parsedConfig.options)
+);
 
-walkDir(path.join(projectDir, 'src'));
-
-console.log(`Building ${sourceFiles.length} TypeScript files...`);
-
-const program = ts.createProgram(sourceFiles, compilerOptions, host);
 const emitResult = program.emit();
-
 const diagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
 
 diagnostics.forEach(diagnostic => {
