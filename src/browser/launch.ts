@@ -61,6 +61,37 @@ export async function navigateToUrl(
       userAgent: config.userAgent,
     });
 
+    // Inject hooks at context level BEFORE page creation
+    // This ensures hooks are ready before any page scripts run
+    await context.addInitScript(() => {
+      (window as any).__dl_events = [];
+      (window as any).__dl_ready = false;
+      const originalDataLayer = (window as any).dataLayer;
+      const proxyDataLayer = {
+        push: function (event: any) {
+          const timestamp = Date.now();
+          const capturedEvent = {
+            event: event?.event,
+            payload: { ...event },
+            timestamp,
+            url: window.location.href,
+          };
+          (window as any).__dl_events.push(capturedEvent);
+          if (Array.isArray(originalDataLayer)) {
+            originalDataLayer.push(event);
+          }
+          return capturedEvent;
+        },
+        [Symbol.iterator]: function* () {
+          if (Array.isArray(originalDataLayer)) {
+            yield* originalDataLayer;
+          }
+        },
+      };
+      (window as any).dataLayer = proxyDataLayer;
+      console.log('[dl-auditor] dataLayer capture hooks injected at context level');
+    });
+
     page = await context.newPage();
 
     // Set timeout for this page

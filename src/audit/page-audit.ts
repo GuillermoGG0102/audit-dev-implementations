@@ -7,7 +7,6 @@ import { Browser, Page } from 'playwright';
 import logger from '../core/logger.js';
 import { PageAuditResult, BrowserConfig, ConsentConfig } from '../core/types.js';
 import { launchBrowser, navigateToUrl, closePage } from '../browser/launch.js';
-import { injectDataLayerHooks } from '../browser/hooks.js';
 import { handleConsentBanners } from '../browser/consent.js';
 import { collectCapturedEvents, waitForCapturedEvents } from '../capture/event-collector.js';
 import { normalizeRawEvents } from './normalizer.js';
@@ -46,12 +45,9 @@ export async function auditPage(
     }
 
     // Navigate to page
+    // Hooks are already injected at context level in navigateToUrl
     page = await navigateToUrl(browser, url, options.browserConfig);
     logger.info('Page navigated', { url });
-
-    // Inject dataLayer hooks
-    await injectDataLayerHooks(page);
-    logger.debug('DataLayer hooks injected');
 
     // Handle consent banners
     const consentHandled = await handleConsentBanners(page, options.consentConfig);
