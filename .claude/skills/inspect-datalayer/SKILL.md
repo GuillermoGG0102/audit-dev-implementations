@@ -1,36 +1,59 @@
-# inspect-datalayer Skill
+# name: inspect-datalayer
+description: Analyze a specific dataLayer event captured during audit.
+  Use when user wants to understand event structure, parameters, timing,
+  or needs to validate event compliance.
 
-## Description
-Deep inspection and analysis of a specific dataLayer event or set of events. Useful for understanding event structure, parameters, timing, and relationship to DOM elements or user actions.
+# Inspect dataLayer Event Skill
+
+Provides deep analysis of a specific dataLayer event or event group from audit results.
+
+## What
+Examine event structure, parameters, frequency, and GA4 compatibility.
 
 ## When to Use
 - User wants to understand why a specific event fired
-- Need to trace event origin (page load vs. interaction)
+- Need to trace event origin (page load vs interaction)
 - Validate event parameters against GA4 spec
-- Compare similar events across different URLs
+- Compare similar events across URLs
 - Debug event sequence or timing issues
 
-## Inputs
-- `eventName: string` — event name to inspect
-- `eventPayload?: object` — specific payload to analyze
-- `urls?: URL[]` — filter to specific URLs where event occurred
-- `context?: string` — additional context (e.g., "ecommerce checkout flow")
+## Steps
 
-## Output
-- Structured analysis of event:
-  - Event signature (name, common parameters)
-  - Observed frequency and distribution
-  - Parameter analysis (required, optional, unexpected values)
-  - GA4 compatibility assessment
-  - DOM/interaction context where applicable
-  - Recommendations for compliance
+1. **Locate the event** in audit JSON
+   - Find event by name: `eventName: "purchase"`
+   - Filter by URL if specified
+   - Identify all occurrences
 
-## Related Agents
-- `event-auditor` — captures events
-- `tagging-qa` — validates against spec
+2. **Analyze structure**
+   - Event name and payload
+   - Parameter types (string, number, array, object)
+   - Which parameters are always present
+   - Which vary across observations
 
-## Example Usage
+3. **Check GA4 compliance**
+   - Event name: `^[a-z_]+$`, max 40 chars
+   - Parameters: reserved GA4 names (transaction_id, value, currency)
+   - Check for PII (email, phone, ssn) — flag if present
+
+4. **Report findings**
+   - Event signature with required/optional params
+   - Frequency and distribution across URLs
+   - Any GA4 violations or risks
+   - Recommendations for fixing
+
+## Example Output
+
 ```
-inspect-datalayer eventName=purchase context=checkout
-inspect-datalayer eventName=add_to_cart urls=https://site.com/products/*
+Event: purchase
+Observed: 12 times across 3 URLs
+
+Parameters:
+✓ transaction_id (string, always present)
+✓ value (number, always present)
+✓ currency (string, always present)
+? items (array, present in 10/12 observations)
+✗ customer_email (string, PII risk)
+
+GA4 Status: Mostly compliant
+Recommendation: Remove customer_email parameter
 ```

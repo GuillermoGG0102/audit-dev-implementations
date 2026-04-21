@@ -1,38 +1,64 @@
-# audit-url Skill
+# name: audit-url
+description: Run browser audit on a single URL or small set of URLs.
+  Use when user wants to spot-check a page, test after changes,
+  or verify a specific URL's dataLayer implementation.
 
-## Description
-Audit a single URL or list of URLs. Runs browser automation to capture all dataLayer events on page load and via configured interactions.
+# Audit Single URL Skill
+
+Execute a focused dataLayer audit on one or more URLs without full crawl.
+
+## What
+Capture all dataLayer events (page load + interactions) for a URL and return normalized results.
 
 ## When to Use
-- User wants to audit a specific page
-- Need to re-run audit on a URL after changes
-- Quick spot-check before full crawl
-- Test interaction coverage on a particular page
-- Verify consent handling on a specific URL
+- User wants quick audit of specific page
+- Re-run audit after code changes
+- Verify a particular URL works
+- Test interaction coverage
+- Debug consent handling on specific page
 
-## Inputs
-- `url: string | string[]` — URL(s) to audit
-- `interactions?: string[]` — interaction names to trigger (default: all in config)
-- `config?: object` — override audit config for this run
-- `captureEvidence?: boolean` — include screenshots (default: true)
+## Steps
 
-## Output
-- Page audit results:
-  - Page metadata (title, canonical URL)
-  - Events fired on page load
-  - Events by interaction (mapped to interaction name)
-  - Evidence (screenshots, DOM snapshots)
-  - Warnings (timeouts, consent handling, JS errors)
-  - Raw capture JSON for archival
+1. **Prepare the audit**
+   - Get URL(s) from user
+   - Load audit config (default or override)
+   - Validate URL format (must be absolute HTTPS)
 
-## Related Agents
-- `crawler` — discovers URLs to audit
-- `event-auditor` — executes the audit
-- `tagging-qa` — validates results against spec
+2. **Open page in browser**
+   - Launch Playwright (headless)
+   - Navigate to URL, wait for network idle
+   - Handle any consent banners per config
 
-## Example Usage
+3. **Capture page load events**
+   - Intercept all dataLayer.push on page load
+   - Record timestamp, payload, DOM context
+   - Wait for settleTimeout (default: 3000ms) for late-fired events
+   - Take screenshot of page
+
+4. **Run interactions** (if configured)
+   - For each allowed interaction:
+     - Execute (click, scroll, form input, etc.)
+     - Wait for new dataLayer events
+     - Record which interaction triggered events
+     - Screenshot result state
+
+5. **Return results**
+   - Normalized events with metadata
+   - Raw capture JSON (for archival)
+   - Screenshots as evidence
+   - Any warnings (timeouts, errors)
+
+## Example
+
+User: "audit https://example.com/checkout"
+
+Output:
 ```
-audit-url https://site.com/products/item-123
-audit-url urls=site.com/checkout,site.com/cart interactions=click_cta,form_submit
-audit-url https://site.com/landing config={depth: 2} captureEvidence=true
+Page: https://example.com/checkout
+Events on load: page_view, view_cart
+Events on interaction "click_button_checkout":
+  - initiate_checkout
+  - add_payment_info
+Warnings: None
+Screenshots: 2 (page load, after click)
 ```

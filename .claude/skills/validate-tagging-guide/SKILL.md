@@ -1,46 +1,65 @@
-# validate-tagging-guide Skill
+# name: validate-tagging-guide
+description: Validate audit results against a tagging specification or guide.
+  Use when user provides a measurement spec, compliance requirements,
+  or custom validation rules.
 
-## Description
-Load and validate a tagging guide or measurement specification against audit results. Allows manual override of rules, custom validation, and compliance scoring.
+# Validate Against Tagging Guide Skill
+
+Compare observed dataLayer events against an expected specification (tagging guide).
+
+## What
+Load tagging spec, check observed events match requirements, score compliance, flag risks.
 
 ## When to Use
-- User has a specific tagging guide (CSV, JSON, PDF spec document)
-- Need to validate audit against client's measurement plan
-- Custom event naming conventions or requirements
-- GA4 vs. GTM differences for specific client
-- Manual override or exception for business logic
+- User has a tagging guide or measurement spec
+- Need to validate audit against client requirements
+- Check GA4 event naming or structure
+- Score compliance percentage
+- Identify missing or malformed events
 
-## Inputs
-- `guideFile: string` — path or URL to tagging guide
-- `guideFormat: "csv" | "json" | "spec"` — format of guide
-- `auditResults: AuditResult[]` — audit data to validate against
-- `strictMode?: boolean` — fail on missing optional events (default: false)
-- `overrides?: ValidationOverride[]` — manual rule overrides
+## Steps
 
-## Output
-- Validation report:
-  - Compliance score (0-100%)
-  - Per-page event coverage
-  - Per-interaction event coverage
-  - Missing events by type
-  - Parameter mismatches
-  - Risk flags for report highlight
-  - Exceptions and overrides applied
+1. **Load tagging guide**
+   - Accept CSV, JSON, or spec document
+   - Parse expected events and parameters
+   - Extract naming rules, required fields, restrictions
 
-## Validation Types
-- **Coverage:** required events present
-- **Parameters:** required params populated correctly
-- **Naming:** event names match spec
-- **GA4 structure:** event/parameter format for GA4 compatibility
-- **Exclusions:** forbidden parameters not present
+2. **Compare with audit results**
+   - For each expected event:
+     - Is it present in audit? ✓ / ✗
+     - If present, is it on correct page type?
+     - Do parameters match (required, forbidden, types)?
+   - For each observed event:
+     - Is it in the spec?
+     - Flag if unexpected event (may be custom)
 
-## Related Agents
-- `tagging-qa` — enforces rules
-- `report-writer` — includes validation in final report
+3. **Check compliance rules**
+   - Event naming: `^[a-z_]+$`, max length
+   - GA4 reserved params (transaction_id, value, currency)
+   - Forbidden params (PII: email, phone, ssn)
+   - Required params per event type
 
-## Example Usage
+4. **Score and report**
+   - Compliance %: (events matching / expected) * 100
+   - Missing events (required but not observed)
+   - Parameter issues (type mismatch, extra params)
+   - Risk flags (critical, high, medium, low)
+   - Recommendations for remediation
+
+## Example Output
+
 ```
-validate-tagging-guide guideFile=client-tagging-spec.csv guideFormat=csv
-validate-tagging-guide guideFile=measurement-plan.json strictMode=true
-validate-tagging-guide guideFile=spec.json overrides=[{event: custom_purchase, isRequired: false}]
+Tagging Guide: GA4 E-Commerce Standard
+Compliance Score: 85%
+
+✓ page_view (observed on all pages)
+✓ view_item (observed on product pages)
+✗ purchase (expected but NOT observed)
+⚠ add_to_cart (missing currency parameter)
+
+Missing Events: purchase
+Parameter Issues: 2
+Risk Flags: 1 high, 2 medium
+
+Recommendation: Implement purchase event on checkout completion
 ```

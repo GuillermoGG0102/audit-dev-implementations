@@ -1,50 +1,58 @@
-# build-pdf-report Skill
+# name: build-pdf-report
+description: Generate a branded PDF report from audit and validation results.
+  Use when audit and validation are complete, or when user needs
+  to re-render report with different branding.
 
-## Description
-Generate a branded, client-facing PDF report from audit and validation results.
+# Build PDF Report Skill
+
+Transform audit data and validation findings into a professional PDF report.
+
+## What
+Render audit results into branded HTML/PDF with cover, scope, events, risks, and appendix.
 
 ## When to Use
-- Ready to export final deliverable
-- Need to regenerate report with updated branding
-- Create multiple reports for different clients from same audit
-- Preview report in HTML before PDF
-- Custom report sections or structure
+- Audit and validation are complete, ready for final report
+- User wants to regenerate report with different branding
+- Export for client or stakeholder
+- Create multiple client reports from same audit data
+- Preview report structure before PDF
 
-## Inputs
-- `auditResults: AuditResult[]` — normalized audit data
-- `validationResults: ValidationResult[]` — rule validation findings
-- `brandingConfig: BrandingConfig` — client name, logo, colors, fonts
-- `reportConfig?: ReportConfig` — sections to include, tone, appendix depth
-- `outputPath?: string` — where to save PDF (default: output/pdf/{timestamp}.pdf)
-- `includeRawPayloads?: boolean` — include raw dataLayer JSON in appendix (default: true)
+## Steps
+
+1. **Prepare report data**
+   - Gather audit results (events, evidence, metadata)
+   - Gather validation results (compliance score, risks, recommendations)
+   - Load client branding config (colors, logo, typography)
+   - Verify all data is complete
+
+2. **Render HTML from template**
+   - Populate cover page (client name, date, audit scope)
+   - Build executive summary (compliance score, risk count)
+   - Create event tables (by URL, by interaction)
+   - Format anomalies and risk flags with severity
+   - Add appendix with raw payloads and screenshots
+   - Apply client branding (colors, logo, fonts)
+
+3. **Export to PDF**
+   - Render HTML in headless browser
+   - Verify page breaks don't orphan sections
+   - Check colors, images, tables render correctly
+   - Save to `output/pdf/{timestamp}.pdf`
+
+4. **Verify output**
+   - PDF is readable and professional
+   - All evidence (screenshots) is included
+   - No broken links or missing content
+   - Report file is provided to user
 
 ## Output
-- **report.pdf** — final client-facing deliverable
-- **report.html** — intermediate HTML (for QA and archival)
-- **report.json** — structured report data (for programmatic use)
 
-## Report Sections (Standard)
-1. Cover page (client name, scope, audit date)
-2. Executive summary (key findings, risk highlights)
-3. Scope & methodology (URLs audited, depth, interactions tested)
-4. Events by URL (table: URL → events observed)
-5. Events by interaction (table: interaction type → events)
-6. Anomalies & risks (validation failures, duplicates, missing events)
-7. Appendix (raw payloads, DOM context, evidence screenshots)
+- `report.pdf` — Final client-facing deliverable
+- `report.html` — Intermediate HTML (for QA, archival)
+- `report.json` — Structured data (for programmatic use)
 
-## Branding Customization
-- Client colors (primary, secondary, accent)
-- Logo placement (cover, header)
-- Typography (heading font, body font, weights)
-- Report tone (technical, executive, summary)
-
-## Related Agents
-- `report-writer` — executes report generation
-- `tagging-qa` — provides validation data for report
-
-## Example Usage
-```
-build-pdf-report auditResults=... validationResults=... brandingConfig=acme-corp
-build-pdf-report auditResults=... brandingConfig=... reportConfig={tone: executive, appendixDepth: minimal}
-build-pdf-report auditResults=... includeRawPayloads=true outputPath=output/pdf/custom-report.pdf
-```
+Report includes:
+- Cover, executive summary, scope
+- Event tables (by URL, interaction)
+- Anomalies and risk recommendations
+- Appendix with raw payloads and evidence
