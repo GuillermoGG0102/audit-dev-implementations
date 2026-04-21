@@ -2,7 +2,7 @@
  * Unit tests for browser layer (launch, hooks, consent)
  */
 
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { launchBrowser, navigateToUrl, closePage, closeBrowser, takeScreenshot } from '../../src/browser/launch';
 import { injectDataLayerHooks, getCapturedEvents, waitForEvents, clearCapturedEvents } from '../../src/browser/hooks';
 import { handleConsentBanners, isConsentBannerVisible, addConsentSelector } from '../../src/browser/consent';

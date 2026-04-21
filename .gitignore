@@ -16,8 +16,8 @@ build/
 # Output artifacts (generated, never commit)
 output/
 *.pdf
-*.json
 screenshots/
+output/**/*.json
 
 # IDE
 .vscode/

@@ -3,7 +3,7 @@
  * Handles browser setup, page navigation, and readiness detection.
  */
 
-import { chromium, Browser, Page, BrowserLaunchArgumentsFactory } from 'playwright';
+import { chromium, Browser, Page } from 'playwright';
 import logger from '../core/logger.js';
 import { BrowserError } from '../core/errors.js';
 import { BrowserConfig } from '../core/types.js';
@@ -18,9 +18,9 @@ export async function launchBrowser(config: BrowserConfig): Promise<Browser> {
       timeout: config.timeout,
     });
 
-    const launchArgs: BrowserLaunchArgumentsFactory = {
+    const launchArgs = {
       headless: config.headless,
-      args: [],
+      args: [] as string[],
     };
 
     // Add sandbox flag if specified in config
@@ -59,6 +59,37 @@ export async function navigateToUrl(
         height: config.viewport.height,
       },
       userAgent: config.userAgent,
+    });
+
+    // Inject hooks at context level BEFORE page creation
+    // This ensures hooks are ready before any page scripts run
+    await context.addInitScript(() => {
+      (window as any).__dl_events = [];
+      (window as any).__dl_ready = false;
+      const originalDataLayer = (window as any).dataLayer;
+      const proxyDataLayer = {
+        push: function (event: any) {
+          const timestamp = Date.now();
+          const capturedEvent = {
+            event: event?.event,
+            payload: { ...event },
+            timestamp,
+            url: window.location.href,
+          };
+          (window as any).__dl_events.push(capturedEvent);
+          if (Array.isArray(originalDataLayer)) {
+            originalDataLayer.push(event);
+          }
+          return capturedEvent;
+        },
+        [Symbol.iterator]: function* () {
+          if (Array.isArray(originalDataLayer)) {
+            yield* originalDataLayer;
+          }
+        },
+      };
+      (window as any).dataLayer = proxyDataLayer;
+      console.log('[dl-auditor] dataLayer capture hooks injected at context level');
     });
 
     page = await context.newPage();

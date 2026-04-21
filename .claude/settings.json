@@ -1,0 +1,72 @@
+{
+  "project": "dl-auditor",
+  "description": "Automated dataLayer auditing tool for analytics QA",
+  "version": "0.1.0",
+  "agents": [
+    {
+      "name": "crawler",
+      "description": "URL discovery and crawling",
+      "path": ".claude/agents/crawler.md"
+    },
+    {
+      "name": "event-auditor",
+      "description": "Browser automation and dataLayer capture",
+      "path": ".claude/agents/event-auditor.md"
+    },
+    {
+      "name": "tagging-qa",
+      "description": "Event validation against tagging specification",
+      "path": ".claude/agents/tagging-qa.md"
+    },
+    {
+      "name": "report-writer",
+      "description": "Branded PDF report generation",
+      "path": ".claude/agents/report-writer.md"
+    }
+  ],
+  "skills": [
+    {
+      "name": "inspect-datalayer",
+      "description": "Deep inspection of specific dataLayer events",
+      "path": ".claude/skills/inspect-datalayer/SKILL.md"
+    },
+    {
+      "name": "audit-url",
+      "description": "Audit a single URL or list of URLs",
+      "path": ".claude/skills/audit-url/SKILL.md"
+    },
+    {
+      "name": "validate-tagging-guide",
+      "description": "Validate audit against tagging specification",
+      "path": ".claude/skills/validate-tagging-guide/SKILL.md"
+    },
+    {
+      "name": "build-pdf-report",
+      "description": "Generate branded PDF report",
+      "path": ".claude/skills/build-pdf-report/SKILL.md"
+    }
+  ],
+  "architecture": {
+    "layers": [
+      "crawler - URL discovery and queueing",
+      "browser - Playwright automation and consent handling",
+      "capture - dataLayer interception and evidence collection",
+      "audit - Event normalization and DOM context",
+      "rules - Validation engine and tagging spec comparison",
+      "report - PDF generation and client branding"
+    ],
+    "principles": [
+      "Event traceability is non-negotiable",
+      "Config-driven behavior (no hardcoded rules)",
+      "Browser-based evidence only",
+      "Determinism and observability",
+      "Separation of concerns"
+    ]
+  },
+  "config": {
+    "audit": "config/default.audit.yaml",
+    "rules": "config/rules/",
+    "branding": "config/branding/",
+    "selectors": "config/selectors/"
+  }
+}
