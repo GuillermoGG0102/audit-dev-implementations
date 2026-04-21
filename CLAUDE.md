@@ -208,6 +208,55 @@ A feature is done when:
 
 ---
 
+## Report Templates & Design
+
+Reports are client-facing deliverables. Template styling must be professional and brand-consistent.
+
+### HTML & PDF Standards
+- **Report template location:** `/templates/report.html` (renders to PDF via headless browser)
+- **Style delivery:** Inline CSS only (no external stylesheets) for reliable PDF output
+- **Typography:** Pair a serif or display font for headings with a clean sans-serif for body (generous 1.6–1.7 line-height for readability)
+- **Colors:** Never use default grays. Derive from client brand palette stored in `/config/{client}/branding.json` or `/assets/brand/colors.json`
+- **Spacing:** Use intentional token-based spacing (consistent gutters, predictable padding)
+- **Layering:** Use subtle shadows and borders to distinguish sections from one another
+- **Images:** Apply gradient overlays and color treatments (e.g., `mix-blend-multiply`) for a polished look
+
+### Brand Assets
+- Check `/assets/brand/` for logo, color guide, and typography rules
+- Check `/assets/logos/` for company/client logos to include in reports
+- If a logo exists, use it instead of placeholders
+- If a color palette is defined, use exact hex values — do not invent brand colors
+- Store client-specific branding in `/config/{client-name}/branding.json` (colors, font URLs, logo path)
+
+### Testing Report Output
+- Use a local Node.js server to render and inspect templates before PDF export: `node serve.mjs` (serves from project root on `http://localhost:3000`)
+- Check report in browser first: spacing, alignment, font rendering, color accuracy
+- Test PDF export and verify:
+  - Page breaks are in the right places (no orphaned headers/footers)
+  - Images render sharply
+  - Tables don't bleed off the page
+  - Colors print as expected
+
+### Report Sections
+Every final report must include:
+- **Cover page** — client name, audit scope, date, agency branding
+- **Executive summary** — key findings, metrics, risk highlights
+- **Scope** — URLs audited, depth, date range, interaction types tested
+- **Detected events by URL** — table: page URL → events observed with timestamps
+- **Detected events by interaction** — table: interaction → event name → parameters
+- **Anomalies & risks** — validation failures, duplicates, missing required events, malformed payloads
+- **Appendix** — raw `dataLayer` payloads, DOM context, screenshots
+
+### Anti-Generic Design Guardrails (Reports)
+- **Do not use default colors.** Derive from client brand or audit tool's brand.
+- **Do not use flat shadows.** Use layered, color-tinted shadows with low opacity for depth.
+- **Do not use generic typography.** Pair font families intentionally; apply tight tracking on large headings, generous line-height on body.
+- **Do not overcrowd.** Leave white space; break complex data into smaller tables or sections.
+- **Tables & lists must be scannable.** Use striped rows, clear headers, consistent alignment.
+- **Evidence must be prominent.** Screenshots and raw payloads are trust-builders; don't bury them.
+
+---
+
 ## When Adding Features
 
 1. Understand which layer(s) are affected
