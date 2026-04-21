@@ -189,21 +189,99 @@ A feature is done when:
 ## Repository Conventions
 
 ```
-├── src/
-│   ├── crawler/          # Discovery & queueing
-│   ├── browser/          # Playwright orchestration
-│   ├── capture/          # dataLayer interception
-│   ├── audit/            # Event normalization
-│   ├── validation/       # Rule engine & checks
-│   │   └── rules/        # Validation rule modules
-│   ├── reporting/        # Report generation
-│   └── types/            # Shared domain types
-├── config/               # Site scope, rules, client branding
-├── templates/            # HTML report templates
-├── docs/                 # Architecture, decisions
-├── output/               # Generated artifacts (never commit)
-├── .env.example          # Template for required env vars
-└── CLAUDE.md             # This file
+dl-auditor/
+├─ CLAUDE.md                           # Guidance for Claude Code
+├─ README.md                           # Project overview
+├─ package.json                        # Dependencies and scripts
+├─ tsconfig.json                       # TypeScript configuration
+├─ .gitignore                          # Git ignore rules
+├─ .env.example                        # Environment variables template
+
+├─ .claude/                            # Claude Code configuration
+│  ├─ settings.json                    # Project settings, agents, skills
+│  ├─ agents/                          # Agent implementations
+│  │  ├─ crawler.md
+│  │  ├─ event-auditor.md
+│  │  ├─ tagging-qa.md
+│  │  └─ report-writer.md
+│  └─ skills/                          # Skill implementations
+│     ├─ inspect-datalayer/SKILL.md
+│     ├─ audit-url/SKILL.md
+│     ├─ validate-tagging-guide/SKILL.md
+│     └─ build-pdf-report/SKILL.md
+
+├─ config/                             # Audit config, rules, branding
+│  ├─ default.audit.yaml               # Base audit configuration
+│  ├─ selectors/
+│  │  └─ generic.yaml                  # Consent & interaction selectors
+│  ├─ rules/
+│  │  ├─ ga4.yaml                      # GA4 validation rules
+│  │  └─ agency-standard.yaml          # Custom rules per-client
+│  └─ branding/
+│     ├─ theme.json                    # Colors, typography, spacing
+│     ├─ cover.html                    # PDF cover template
+│     └─ report.css                    # Report styling
+
+├─ src/                                # Main application code
+│  ├─ cli/
+│  │  └─ index.ts                      # Command-line interface
+│  ├─ core/                            # Core utilities
+│  │  ├─ types.ts
+│  │  ├─ logger.ts
+│  │  ├─ config.ts
+│  │  └─ errors.ts
+│  ├─ crawler/                         # URL discovery
+│  │  ├─ sitemap.ts
+│  │  ├─ discover.ts
+│  │  └─ url-queue.ts
+│  ├─ browser/                         # Playwright automation
+│  │  ├─ launch.ts
+│  │  ├─ consent.ts
+│  │  ├─ hooks.ts
+│  │  └─ interaction-runner.ts
+│  ├─ capture/                         # Event & evidence capture
+│  │  ├─ datalayer-observer.ts
+│  │  ├─ network-observer.ts
+│  │  ├─ console-observer.ts
+│  │  └─ dom-snapshot.ts
+│  ├─ audit/                           # Audit normalization
+│  │  ├─ page-audit.ts
+│  │  ├─ interaction-audit.ts
+│  │  ├─ normalizer.ts
+│  │  └─ evidence.ts
+│  ├─ rules/                           # Rule engine & validators
+│  │  ├─ engine.ts
+│  │  ├─ validators.ts
+│  │  └─ schemas.ts
+│  ├─ report/                          # PDF generation
+│  │  ├─ report-model.ts
+│  │  ├─ render-html.ts
+│  │  ├─ render-pdf.ts
+│  │  └─ assets.ts
+│  └─ utils/                           # Utility functions
+│     ├─ urls.ts
+│     ├─ selectors.ts
+│     └─ sanitize.ts
+
+├─ templates/                          # HTML report templates
+│  ├─ report.html
+│  └─ partials/
+
+├─ tests/
+│  ├─ unit/                            # Unit tests
+│  ├─ integration/                     # Integration tests
+│  └─ fixtures/                        # Test data and mocks
+
+├─ output/                             # Generated artifacts (never commit)
+│  ├─ json/
+│  ├─ screenshots/
+│  └─ pdf/
+
+└─ docs/                               # Architecture documentation
+   ├─ architecture.md
+   ├─ audit-spec.md
+   ├─ event-taxonomy.md
+   └─ roadmap.md
 ```
 
 ---

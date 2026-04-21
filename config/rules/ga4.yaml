@@ -1,0 +1,111 @@
+# GA4 Event Validation Rules
+# Enforce GA4 measurement spec and Google Analytics 4 requirements
+
+ga4:
+  # Event naming
+  eventNaming:
+    pattern: '^[a-z_]+$'
+    maxLength: 40
+    reserved:
+      - page_view
+      - session_start
+      - user_engagement
+
+  # Recommended events
+  recommendedEvents:
+    page_view:
+      required: true
+      parameters:
+        page_title:
+          type: string
+          required: false
+        page_path:
+          type: string
+          required: false
+        page_referrer:
+          type: string
+          required: false
+
+    view_item:
+      parameters:
+        item_id:
+          type: string
+          required: true
+        item_name:
+          type: string
+          required: true
+        item_category:
+          type: string
+          required: false
+        price:
+          type: number
+          required: false
+
+    add_to_cart:
+      parameters:
+        item_id:
+          type: string
+          required: true
+        item_name:
+          type: string
+          required: true
+        value:
+          type: number
+          required: false
+        currency:
+          type: string
+          required: false
+
+    purchase:
+      parameters:
+        transaction_id:
+          type: string
+          required: true
+        value:
+          type: number
+          required: true
+        currency:
+          type: string
+          required: true
+        items:
+          type: array
+          required: true
+
+  # Parameter naming
+  parameterNaming:
+    pattern: '^[a-z_]+$'
+    maxLength: 40
+
+  # Forbidden parameters (PII)
+  forbidden:
+    - email
+    - phone
+    - ssn
+    - password
+    - credit_card
+    - full_name
+    - ip_address
+
+  # User properties (recommended)
+  userProperties:
+    - customer_id
+    - customer_lifetime_value
+    - first_purchase_date
+    - purchase_count
+    - subscription_status
+
+dataLayer:
+  # Standard dataLayer structure
+  minEventSize: 2  # at least event name + 1 param
+  maxEventSize: 50
+
+  # Event payload must include
+  required:
+    - event
+
+  # Reserved/system fields
+  reserved:
+    - gtm.uniqueEventId
+    - gtm.uniqueEventId
+    - ga_session_id
+    - ga_session_number

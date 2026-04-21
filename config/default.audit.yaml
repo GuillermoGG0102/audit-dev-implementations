@@ -1,0 +1,66 @@
+# Default Audit Configuration
+# Override per-client in config/{client-name}/
+
+crawl:
+  depth: 2
+  maxPages: 100
+  followExternalLinks: false
+  includePatterns: []
+  excludePatterns:
+    - '/admin'
+    - '/api'
+    - '/logout'
+    - '\?.*[0-9a-f]{32}'  # tracking parameters
+
+browser:
+  headless: true
+  timeout: 30000
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+  viewport:
+    width: 1280
+    height: 720
+
+consent:
+  # Consent banner selectors - fill in per-client
+  banners:
+    - selector: '.cookie-banner button:has-text("Accept All")'
+      priority: 1
+    - selector: 'button[aria-label*="consent"]'
+      priority: 2
+
+interactions:
+  # Safe interactions to trigger (default allowed)
+  allowed:
+    - click
+    - hover
+    - select
+    - input
+    - scroll
+    - pagination
+    - tab
+    - accordion
+
+  # Dangerous interactions (blocked by default)
+  blocked:
+    - submit       # forms
+    - click:checkout
+    - click:purchase
+    - click:signup
+    - click:logout
+    - drag
+    - delete
+    - fileUpload
+
+capture:
+  # What to capture during audit
+  events: true
+  screenshots: true
+  console: true
+  network: false
+  domSnapshot: true
+  timing: true
+
+evidence:
+  screenshotOnInteraction: true
+  domContextSize: 2  # parent + siblings
+  maxScreenshots: 50

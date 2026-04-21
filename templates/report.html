@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Layer Audit Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1f2937;
+      background: #f9fafb;
+    }
+
+    .page {
+      width: 8.5in;
+      height: 11in;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      page-break-after: always;
+    }
+
+    /* Cover Page */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .cover h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .cover .client-name {
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
+      opacity: 0.9;
+    }
+
+    .cover .audit-date {
+      font-size: 1rem;
+      margin-top: auto;
+      opacity: 0.8;
+    }
+
+    /* Content Pages */
+    .content {
+      padding: 2rem;
+      height: 100%;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      color: #1e40af;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f3f4f6;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      border: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .metric {
+      display: inline-block;
+      background: #f3f4f6;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      margin: 0.5rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .metric-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+
+    .risk-critical {
+      border-left: 4px solid #dc2626;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #fef2f2;
+    }
+
+    .risk-high {
+      border-left: 4px solid #ea580c;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #fef3f2;
+    }
+
+    .risk-medium {
+      border-left: 4px solid #f59e0b;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #fefce8;
+    }
+
+    .risk-low {
+      border-left: 4px solid #10b981;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #f0fdf4;
+    }
+
+    .appendix {
+      background: #f9fafb;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+      .page {
+        box-shadow: none;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page cover">
+    <h1>Data Layer Audit Report</h1>
+    <div class="client-name">{{clientName}}</div>
+    <div class="audit-date">Audit Date: {{auditDate}}</div>
+  </div>
+
+  <div class="page content">
+    <h2>Executive Summary</h2>
+    <div style="display: flex; gap: 1rem;">
+      <div class="metric">
+        <div class="metric-value">{{totalEvents}}</div>
+        <div class="metric-label">Events Captured</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">{{urlsAudited}}</div>
+        <div class="metric-label">URLs Audited</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">{{complianceScore}}%</div>
+        <div class="metric-label">Compliance Score</div>
+      </div>
+    </div>
+    <p>This report summarizes findings from an automated dataLayer audit of {{clientName}}'s digital properties.</p>
+  </div>
+
+  <div class="page content">
+    <h2>Audit Scope</h2>
+    <h3>Base URL</h3>
+    <p><code>{{baseURL}}</code></p>
+    <h3>URLs Audited</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Events Detected</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#urls}}
+        <tr>
+          <td>{{url}}</td>
+          <td>{{eventCount}}</td>
+        </tr>
+        {{/urls}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page content">
+    <h2>Detected Events</h2>
+    <h3>By URL</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Parameters</th>
+          <th>URLs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#events}}
+        <tr>
+          <td><code>{{eventName}}</code></td>
+          <td>{{parameterCount}}</td>
+          <td>{{urlCount}}</td>
+        </tr>
+        {{/events}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page content">
+    <h2>Anomalies & Risks</h2>
+    {{#risks}}
+    <div class="risk-{{severity}}">
+      <strong>{{title}}</strong>
+      <p>{{description}}</p>
+      <p><em>Recommendation: {{recommendation}}</em></p>
+    </div>
+    {{/risks}}
+  </div>
+
+  <div class="page content">
+    <h2>Appendix: Raw Payloads</h2>
+    <p>Detailed event payloads captured during audit:</p>
+    <div class="appendix">{{rawPayloads}}</div>
+  </div>
+</body>
+</html>
