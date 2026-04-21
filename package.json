@@ -1,0 +1,48 @@
+{
+  "name": "dl-auditor",
+  "version": "0.1.0",
+  "description": "Automated dataLayer auditing tool for analytics QA",
+  "type": "module",
+  "main": "dist/src/cli/index.js",
+  "bin": {
+    "dl-auditor": "dist/src/cli/index.js"
+  },
+  "scripts": {
+    "dev": "node scripts/build.mjs && npx tsc --watch",
+    "build": "node scripts/build.mjs",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:unit": "vitest --run tests/unit/",
+    "test:integration": "vitest --run tests/integration/",
+    "lint": "eslint src/ --ext .ts",
+    "format": "prettier --write src/",
+    "audit": "node dist/src/cli/index.js audit",
+    "report": "node dist/src/cli/index.js report"
+  },
+  "keywords": [
+    "analytics",
+    "datalayer",
+    "audit",
+    "gtm",
+    "ga4",
+    "qa",
+    "testing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "yaml": "^2.0.0",
+    "pdfkit": "^0.13.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0",
+    "vitest": "^1.1.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0"
+  }
+}
