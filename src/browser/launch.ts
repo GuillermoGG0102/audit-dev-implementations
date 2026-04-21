@@ -3,7 +3,7 @@
  * Handles browser setup, page navigation, and readiness detection.
  */
 
-import { chromium, Browser, Page, BrowserLaunchArgumentsFactory } from 'playwright';
+import { chromium, Browser, Page } from 'playwright';
 import logger from '../core/logger.js';
 import { BrowserError } from '../core/errors.js';
 import { BrowserConfig } from '../core/types.js';
@@ -18,9 +18,9 @@ export async function launchBrowser(config: BrowserConfig): Promise<Browser> {
       timeout: config.timeout,
     });
 
-    const launchArgs: BrowserLaunchArgumentsFactory = {
+    const launchArgs = {
       headless: config.headless,
-      args: [],
+      args: [] as string[],
     };
 
     // Add sandbox flag if specified in config

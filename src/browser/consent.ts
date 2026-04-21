@@ -5,7 +5,6 @@
 
 import { Page } from 'playwright';
 import logger from '../core/logger.js';
-import { BrowserError } from '../core/errors.js';
 import { ConsentConfig } from '../core/types.js';
 
 /**

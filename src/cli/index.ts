@@ -5,8 +5,6 @@
  * Usage: dl-auditor audit --url <url> [options]
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
 import logger from '../core/logger.js';
 
 // Main entry point
